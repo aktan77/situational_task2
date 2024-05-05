@@ -8,7 +8,7 @@ pipeline {
         }
         stage('Deploy to Kubernetes') {
             steps {
-                configFileProvider([configFile(fileId: 'situational_task1', variable: 'CONFIG_FILE')]){
+                configFileProvider([configFile(fileId: 'situational_task2', variable: 'CONFIG_FILE')]){
                     sh "aws eks update-kubeconfig --region us-east-1 --name dev-eks"
                 }
                 withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'creds', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']])
