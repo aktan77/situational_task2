@@ -5,7 +5,7 @@ variable "region" {
 
 variable "prefix" {
   type    = string
-  default = "dev"
+  default = "st2"
 }
 
 variable "pub_key" {
