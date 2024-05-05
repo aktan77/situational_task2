@@ -1,82 +1,95 @@
-Certainly! Here's a combined README for both the Dockerized React App Deployment Pipeline and the Number System Converter React application:
+Here's the documentation for the provided Jenkins pipeline:
 
 ---
 
-# Dockerized React App Deployment Pipeline & Number System Converter
+# Jenkins Pipeline Documentation
 
-This repository contains a Dockerized React application for converting numbers between different number systems and a Continuous Integration (CI) pipeline script for automating the deployment process.
+## Overview
 
-## Dockerized React App Deployment Pipeline
+This Jenkins pipeline automates the process of building a Docker image for a specified application, logging in to Docker Hub using provided credentials, pushing the built image to Docker Hub, and finally logging out of Docker.
 
-### Pipeline Overview
+## Requirements
 
-The CI pipeline is defined in a Jenkinsfile and automates the deployment process of the React application using Docker containers. The pipeline consists of the following stages:
+- Jenkins server with Pipeline support.
+- Docker installed on Jenkins server.
+- Docker Hub account for pushing Docker images.
+- Jenkins credentials set up for Docker Hub login.
 
-1. **Build**: Builds the Docker image for the React application using a Dockerfile.
-2. **Login**: Authenticates with Docker Hub using provided credentials to enable pushing the built image.
-3. **Push an image to Docker Hub**: Pushes the built Docker image to Docker Hub repository.
-4. **Post Actions**: Logs out of Docker after the pipeline execution.
+## Pipeline Structure
 
-### Docker Configuration
+The pipeline consists of several stages:
 
-#### Dockerfile
+### 1. Agent Declaration
 
-The Dockerfile in the `application/` directory is responsible for building the Docker image. It uses a multi-stage build:
+```groovy
+agent any
+```
 
-1. **Build Stage**: Utilizes a Node.js image to install dependencies and build the React application.
-2. **Final Stage**: Uses an Nginx image to serve the built React application.
+Specifies that the pipeline can execute on any available Jenkins agent.
 
-## Number System Converter
+### 2. Environment Variables
 
-### Overview
+```groovy
+environment {
+    DOCKERHUB_CREDENTIALS = credentials('docker-creds')
+}
+```
 
-The Number System Converter is a React application that allows users to convert numbers between decimal, binary, hexadecimal, and octal number systems.
+Defines an environment variable `DOCKERHUB_CREDENTIALS` to store Docker Hub credentials retrieved from Jenkins credentials with ID 'docker-creds'.
 
-### Features
+### 3. Stages
 
-- Convert numbers between decimal, binary, hexadecimal, and octal formats.
-- Real-time conversion as you type.
-- User-friendly interface with dropdowns and input fields.
+#### a. Build Stage
 
-### Usage
+```groovy
+stage('Build') {
+    steps {
+        sh 'docker build -t aktan55/st2_app:latest application/'
+    }
+}
+```
 
-1. Select the input number system (Decimal, Binary, Hexadecimal, Octal) from the dropdown.
-2. Select the output number system.
-3. Enter the value you want to convert in the input field.
-4. Click the "Convert" button.
-5. The converted value will be displayed below the input field.
+Builds a Docker image tagged as `aktan55/st2_app:latest` using the Dockerfile located in the 'application/' directory.
 
-### Getting Started
+#### b. Login Stage
 
-To get started with the project, follow these steps:
+```groovy
+stage('Login') {
+    steps {
+        sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
+    }
+}
+```
 
-1. **Clone the Repository**: 
-   ```
-   git clone <repository-url>
-   ```
+Logs in to Docker Hub using the provided Docker Hub credentials.
 
-2. **Install Dependencies**:
-   ```
-   cd <project-folder>
-   npm install
-   ```
+#### c. Push Image to Docker Hub Stage
 
-3. **Run the Application**:
-   ```
-   npm start
-   ```
+```groovy
+stage('Push an image to docker hub1') {
+    steps {
+        sh 'docker push aktan55/st2_app:latest'
+    }
+}
+```
 
-4. **Open the Application**:
-   Open your web browser and navigate to `http://localhost:3000` to view the application.
+Pushes the built Docker image (`aktan55/st2_app:latest`) to Docker Hub.
 
-### Contributing
+### 4. Post-Build Actions
 
-Contributions are welcome! If you have any suggestions, improvements, or feature requests, feel free to open an issue or submit a pull request.
+```groovy
+post {
+    always {
+        sh 'docker logout'
+    }
+}
+```
 
-### License
+Logs out of Docker after the pipeline execution, ensuring proper cleanup.
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+## Usage
 
----
-
-You can customize this README further based on your preferences and project requirements!
+1. Create a Jenkins job and configure it to use this pipeline script.
+2. Set up Jenkins credentials for Docker Hub login with ID 'docker-creds'.
+3. Customize the pipeline script as needed for your application and environment.
+4. Run the Jenkins job to execute the pipeline.

@@ -1,40 +1,63 @@
-### Terraform Variables:
+Here's a documentation template for the provided Jenkins pipeline:
 
-1. **region**
-   - Type: string
-   - Default: "us-east-1"
-   - Description: Specifies the AWS region where resources will be provisioned.
+---
 
-2. **prefix**
-   - Type: string
-   - Default: "dev"
-   - Description: Prefix used for naming resources. Helps differentiate resources for different environments or projects.
+# Jenkins Pipeline Documentation
 
-3. **pub_key**
-   - Type: string
-   - Default: "./public.pem"
-   - Description: Path to the public key file used for SSH access. This key pair is associated with the AWS Key Pair resource.
+## Overview
 
-4. **env**
-   - Type: string
-   - Default: "dev"
-   - Description: Environment tag used for labeling resources. Helps categorize resources based on the environment they belong to.
+This Jenkins pipeline automates the deployment and management of infrastructure using Terraform. It provides options for initializing Terraform, generating a plan, obtaining approval, and applying changes. Additionally, it supports the destruction of infrastructure if required.
 
+## Requirements
 
+- Jenkins server with Pipeline support.
+- Terraform installed on the Jenkins server.
+- AWS credentials configured in Jenkins for Terraform operations.
+- Proper Terraform configurations and scripts.
 
-### Terraform Provider and Configuration:
+## Pipeline Structure
 
-- **Terraform Block:**
-  - Specifies the required providers and their versions.
+The pipeline consists of several stages:
 
-- **AWS Provider:**
-  - Configures the AWS provider with the specified region from the `region` variable.
+### 1. Agent Declaration
 
-### Terraform Output:
+```groovy
+agent any
+```
 
-- **cluster_name:**
-  - Outputs the name of the EKS cluster provisioned by the Terraform configuration. This can be useful for referencing the cluster in subsequent steps or scripts.
+Specifies that the pipeline can execute on any available Jenkins agent.
 
-### Note:
-- Variables marked as sensitive contain confidential information and should be handled securely.
-- Ensure proper access control and encryption mechanisms are in place for handling sensitive data.
+### 2. Parameters
+
+- **environment**: Workspace/environment file to use for deployment.
+- **autoApprove**: Automatically run apply after generating plan.
+- **destroy**: Destroy Terraform build.
+
+### 3. Stages
+
+#### a. Terraform Init Stage
+
+Initializes Terraform in the specified workspace/environment.
+
+#### b. Terraform Plan Stage
+
+Generates a Terraform plan, unless the `destroy` parameter is set to true.
+
+#### c. Approval Stage
+
+Obtains approval before applying the plan, unless `autoApprove` or `destroy` is set to true.
+
+#### d. Terraform Apply Stage
+
+Applies the Terraform plan, unless the `destroy` parameter is set to true.
+
+#### e. Destroy Stage
+
+Destroys the Terraform infrastructure if the `destroy` parameter is set to true.
+
+## Usage
+
+1. Create a Jenkins job and configure it to use this pipeline script.
+2. Set up the required parameters according to your environment and requirements.
+3. Ensure that Terraform configurations are correctly set up in your repository.
+4. Run the Jenkins job and provide necessary inputs when prompted.
