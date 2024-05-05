@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage ('Build') {
             steps {
-                sh 'docker build -t aktan55/app:latest application/'
+                sh 'docker build -t aktan55/st2_app:latest application/'
             }
 
         }
@@ -17,7 +17,7 @@ pipeline {
         }
         stage ('Push an image to docker hub1'){
             steps {
-                sh 'docker push aktan55/app:latest'
+                sh 'docker push aktan55/st2_app:latest'
             }
         }
     }
