@@ -1,10 +1,5 @@
 pipeline {
     agent any
-
-    // environment {
-    //     KUBECONFIG = configFileProvider([configFile(fileId: 'situational_task1', variable: 'CONFIG_FILE')]) 
-    // }
-
     stages {
         stage('Test'){
             steps{
