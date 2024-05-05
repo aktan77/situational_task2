@@ -1,0 +1,35 @@
+pipeline {
+    agent any
+
+    // environment {
+    //     KUBECONFIG = configFileProvider([configFile(fileId: 'situational_task1', variable: 'CONFIG_FILE')]) 
+    // }
+
+    stages {
+        stage('Test'){
+            steps{
+                sh 'echo hello'
+            }
+        }
+        stage('Deploy to Kubernetes') {
+            steps {
+                configFileProvider([configFile(fileId: 'situational_task1', variable: 'CONFIG_FILE')]){
+                    sh "aws eks update-kubeconfig --region us-east-1 --name dev-eks"
+                }
+                withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', accessKeyVariable: 'AWS_ACCESS_KEY_ID', credentialsId: 'creds', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']])
+                {
+                    sh "kubectl apply -f k8s/"
+                }
+            }
+        }
+    }
+
+    // post {
+    //     success {
+    //         echo 'Deployment successful'
+    //     }
+    //     failure {
+    //         echo 'Deployment failed'
+    //     }
+    // }
+}

@@ -1,0 +1,17 @@
+/* logo-animation.css */
+
+/* Define a simple rotation animation */
+@keyframes rotate {
+    0% {
+      transform: rotate(0deg);
+    }
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  
+  /* Apply the rotation animation to the logo with the "rotate-logo" class */
+  .rotate-logo {
+    animation: rotate 10s linear infinite; /* Rotate the logo continuously */
+  }
+  

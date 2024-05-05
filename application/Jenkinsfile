@@ -1,0 +1,29 @@
+pipeline {
+    agent any
+    environment {
+        DOCKERHUB_CREDENTIALS = credentials('docker-creds')
+    }
+    stages {
+        stage ('Build') {
+            steps {
+                sh 'docker build -t aktan55/app:latest application/'
+            }
+
+        }
+        stage ('Login'){
+            steps {
+                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin' 
+            }
+        }
+        stage ('Push an image to docker hub1'){
+            steps {
+                sh 'docker push aktan55/app:latest'
+            }
+        }
+    }
+    post {
+        always {
+            sh 'docker logout'
+        }
+    }
+}
